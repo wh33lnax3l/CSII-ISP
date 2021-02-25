@@ -2,8 +2,8 @@
 // Code copied from https://gist.github.com/imbilalhassan/8cb9de7eb242947934a996bd68f34bee#file-dbhelper-swift //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/*
 import Foundation
-import SQLite
 
 class DBHelper{
     init(){
@@ -102,3 +102,4 @@ class DBHelper{
         sqlite3_finalize(deleteStatement)
     }
 }
+*/
