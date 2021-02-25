@@ -18,6 +18,33 @@
           "revision": "913804bd82060deb3a1b2160bee6af3fc3240fc8",
           "version": "1.0.4"
         }
+      },
+      {
+        "package": "PerfectCRUD",
+        "repositoryURL": "https://github.com/PerfectlySoft/Perfect-CRUD.git",
+        "state": {
+          "branch": null,
+          "revision": "5a947634b7ce0b991e8f455a61ce02449f2e6f36",
+          "version": "1.2.3"
+        }
+      },
+      {
+        "package": "PerfectSQLite",
+        "repositoryURL": "https://github.com/PerfectlySoft/Perfect-SQLite.git",
+        "state": {
+          "branch": null,
+          "revision": "420002c79529f8307cf0dda832069a46e466ae82",
+          "version": "3.1.4"
+        }
+      },
+      {
+        "package": "PerfectCSQLite3",
+        "repositoryURL": "https://github.com/PerfectlySoft/Perfect-sqlite3-support.git",
+        "state": {
+          "branch": null,
+          "revision": "64c2bd87e1fd3a41cdeeba073bab794db7e97e42",
+          "version": "3.1.1"
+        }
       }
     ]
   },
