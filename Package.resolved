@@ -1,0 +1,43 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CNCURSES",
+        "repositoryURL": "https://github.com/TheCoderMerlin/CNCURSES.git",
+        "state": {
+          "branch": null,
+          "revision": "de907b6f981b5688bc588159426a05de0b16c0ee",
+          "version": "1.0.2"
+        }
+      },
+      {
+        "package": "CSQLite",
+        "repositoryURL": "https://github.com/stephencelis/CSQLite.git",
+        "state": {
+          "branch": null,
+          "revision": "9106e983d5e3d5149ee35281ec089484b0def018",
+          "version": "0.0.3"
+        }
+      },
+      {
+        "package": "Curses",
+        "repositoryURL": "https://github.com/TheCoderMerlin/Curses.git",
+        "state": {
+          "branch": null,
+          "revision": "913804bd82060deb3a1b2160bee6af3fc3240fc8",
+          "version": "1.0.4"
+        }
+      },
+      {
+        "package": "SQLite.swift",
+        "repositoryURL": "https://github.com/stephencelis/SQLite.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "0a9893ec030501a3956bee572d6b4fdd3ae158a1",
+          "version": "0.12.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
