@@ -1,0 +1,28 @@
+Dmg = Floor(.5 * Power * (Atk / Def) * Multipliers) + 1
+Atk = (BaseAttack + AttackIV) * CPM
+Def = (BaseDefense + DefenseIV) * CPM
+CPM REFERS TO A TABLE, appproximate 0.1336 * level^.5
+
+ALL MULTIPLIERS STACK MULTIPLICATIVELY (I think)
+Multiplers: STAB, WAB, FAB, Effectiveness
+STAB
+- If move type is 1 of pokemon type, 1.2x
+
+WAB
+- If move type is a boosted weather type, 1.2x
+
+FAB
+- 3%, 5%, 7%, 10% depending on friendship tier
+
+Effectiveness
+- Move type against EACH defending type, no priority
+- Neutral: 1.0x
+- Super: 1.6x
+- Not very: 0.625x
+- Immune: 0.390625x (.0625 squared)
+- Effectiveness stacks multiplicatively
+
+
+DPS
+- Calculate using damage formula, then cooldown and move duration for total time
+- Cooldown? Need time between attacks as well as time for attack animation, unless they are not additive (ie. press button and CD starts immediately). Can't find easily, ask in Discord?

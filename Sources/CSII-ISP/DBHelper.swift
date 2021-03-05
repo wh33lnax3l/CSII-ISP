@@ -2,6 +2,7 @@
 // Code copied from https://github.com/TheCoderMerlin/SQLiteTest //
 ///////////////////////////////////////////////////////////////////
 
+/*
 import Foundation
 import PerfectSQLite
 
@@ -130,4 +131,5 @@ class DBHelper{
         sqlite3_finalize(deleteStatement)
     }
 }
+*/
 */
