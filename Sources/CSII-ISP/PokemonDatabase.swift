@@ -47,4 +47,62 @@ public class PokemonDatabase{
             print("Failed to insert: \(error)")
         }
     }
+
+    // The fact that these are 2 separate functions is ugly, but the alternative is returning an Any and guard casting it on every query
+    public func queryDataGivenName(dataColumn:PokemonQueryType, name:String) -> String{ // Consider throwing from query?        
+        do {
+            try db.run(pokemon.createIndex(name, unique: true, ifNotExists:true))
+            switch dataColumn{
+            case .dexNumber:
+                for monster in try db.prepare(pokemon.select(self.name, dexNumber).filter(self.name == name)){
+                    return String(monster[dexNumber])
+                }
+            case .primaryType:
+                for monster in try db.prepare(pokemon.select(self.name, primaryType).filter(self.name == name)){
+                    return monster[primaryType]
+                }
+            case .secondaryType:
+                for monster in try db.prepare(pokemon.select(self.name, dexNumber).filter(self.name == name)){
+                    guard let result = monster[secondaryType] else{
+                        fatalError("Queried pokemon \(name), resulting in row at \(monster[self.name]) does not have secondry type.") // Make this throw an error or a functionally negligible type                        
+                    }
+                    return result
+                }
+            case .baseStamina:
+                for monster in try db.prepare(pokemon.select(self.name, baseStamina).filter(self.name == name)){
+                    return String(monster[baseStamina])
+                }
+            case .baseAttack:
+                for monster in try db.prepare(pokemon.select(self.name, baseAttack).filter(self.name == name)){
+                    return String(monster[baseAttack])
+                }
+            case .baseDefense:
+                for monster in try db.prepare(pokemon.select(self.name, baseDefense).filter(self.name == name)){
+                    return String(monster[baseDefense])
+                }
+            case .quickMoves:
+                for monster in try db.prepare(pokemon.select(self.name, quickMoves).filter(self.name == name)){
+                    return String(monster[quickMoves])
+                }
+            case .chargeMoves:
+                for monster in try db.prepare(pokemon.select(self.name, chargeMoves).filter(self.name == name)){
+                    return String(monster[chargeMoves])
+                }
+            }
+        }catch{
+            fatalError("Did not successfully prepare db when attempting to query integer data with it.")
+        }
+        fatalError("Reached end of query without returning or failing. Ought to be impossible. Data column: \(dataColumn), Name: \(name)")
+    }
+}
+
+public enum PokemonQueryType{    
+    case dexNumber
+    case primaryType
+    case secondaryType
+    case baseStamina
+    case baseAttack
+    case baseDefense
+    case quickMoves
+    case chargeMoves
 }
