@@ -18,7 +18,7 @@ public class PokemonDatabase{
     init() throws{
         self.db = try Connection("~/CSII-ISP/Sources/CSII-ISP/pokemon.sqlite3")
         try db.run(pokemon.create(ifNotExists: true) { t in
-                       t.column(name, primaryKey: true) // Can't say primary key and unique?
+                       t.column(name, primaryKey: true)
                        t.column(dexNumber, unique: true)
                        t.column(primaryType)
                        t.column(secondaryType)
@@ -42,13 +42,12 @@ public class PokemonDatabase{
                                                   self.baseDefense <- baseDefense,
                                                   self.quickMoves <- quickMoves,
                                                   self.chargeMoves <- chargeMoves))
-            print("Inserted at rowId: \(rowId)")
+            print("Inserted in Pokemon at rowId: \(rowId)")
         }catch{
             print("Failed to insert: \(error)")
         }
     }
 
-    // The fact that these are 2 separate functions is ugly, but the alternative is returning an Any and guard casting it on every query
     public func queryDataGivenName(dataColumn:PokemonQueryType, name:String) -> String{ // Consider throwing from query?        
         do {
             try db.run(pokemon.createIndex(name, unique: true, ifNotExists:true))
