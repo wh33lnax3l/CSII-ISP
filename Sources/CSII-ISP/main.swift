@@ -24,6 +24,24 @@ precondition(colors.areSupported, "This terminal doesn't support colors")
 colors.startUp()
 let keyboard = Keyboard.shared
 
+// Creates databases
+var pokemonDatabase : PokemonDatabase
+do{
+    pokemonDatabase = try PokemonDatabase()    
+}catch{
+    fatalError("The Pokemon Database could not be initialized")
+}
+var movesDatabase : MovesDatabase
+do{
+    movesDatabase = try MovesDatabase()
+}catch{
+    fatalError("The Moves Database could not be initialized")
+}
+
+// Fills databases
+// Use button press to update
+generateDatabases(pokemon:&pokemonDatabase, moves:&movesDatabase)
+
 // Defines function to write test at a given point
 func writeAtLocation(_ string: String, location: Point){
     cursor.pushPosition(newPosition: location)

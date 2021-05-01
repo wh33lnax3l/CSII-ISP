@@ -30,10 +30,9 @@ public class PokemonDatabase{
                    })
     }
 
-    public func insertData(name:String, dexNumber:Int, primaryType:String, secondaryType:String?, baseStamina:Int, baseAttack:Int, baseDefense:Int, quickMoves:String, chargeMoves:String){
-        do{
-            let rowId = try db.run(pokemon.insert(or: .replace,
-                                                  self.name <- name,
+    public func insertData(name:String, dexNumber:Int, primaryType:String, secondaryType:String?, baseStamina:Int, baseAttack:Int, baseDefense:Int, quickMoves:String, chargeMoves:String){        
+        do{                     
+            let rowId = try db.run(pokemon.insert(self.name <- name,
                                                   self.dexNumber <- dexNumber,
                                                   self.primaryType <- primaryType,
                                                   self.secondaryType <- secondaryType,
@@ -43,7 +42,10 @@ public class PokemonDatabase{
                                                   self.quickMoves <- quickMoves,
                                                   self.chargeMoves <- chargeMoves))
             print("Inserted in Pokemon at rowId: \(rowId)")
-        }catch{
+        }catch let Result.error(message, code, statement) where code == SQLITE_CONSTRAINT{
+            // This is supposed to occur any time a duplicate name is attempted to be inserted
+            print("Constraint failed: \(message), in \(statement)")
+        }catch let error{
             print("Failed to insert: \(error)")
         }
     }
@@ -51,7 +53,7 @@ public class PokemonDatabase{
     public func queryDataGivenName(dataColumn:PokemonQueryType, name:String) -> String{ // Consider throwing from query?        
         do {
             try db.run(pokemon.createIndex(name, unique: true, ifNotExists:true))
-            switch dataColumn{
+            switch dataColumn{          
             case .dexNumber:
                 for monster in try db.prepare(pokemon.select(self.name, dexNumber).filter(self.name == name)){
                     return String(monster[dexNumber])
