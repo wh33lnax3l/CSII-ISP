@@ -16,7 +16,7 @@ public class PokemonDatabase{
     let chargeMoves = Expression<String>("charge_moves")
         
     init() throws{
-        self.db = try Connection("~/CSII-ISP/Sources/CSII-ISP/pokemon.sqlite3")
+        self.db = try Connection("~/CSII-ISP/Sources/CSII-ISP/pokemon.db")
         try db.run(pokemon.create(ifNotExists: true) { t in
                        t.column(name, primaryKey: true)
                        t.column(dexNumber, unique: true)

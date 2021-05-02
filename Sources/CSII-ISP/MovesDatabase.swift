@@ -15,7 +15,7 @@ public class MovesDatabase{
     let energyChange = Expression<Int>("energy_change")
 
     init() throws{
-        self.db = try Connection("~/CSII-ISP/Sources/CSII-ISP/moves.sqlite3")
+        self.db = try Connection("~/CSII-ISP/Sources/CSII-ISP/pokemon.db")
         try db.run(moves.create(ifNotExists: true) { t in
                        t.column(name, primaryKey: true)
                        t.column(idNumber, unique: true)

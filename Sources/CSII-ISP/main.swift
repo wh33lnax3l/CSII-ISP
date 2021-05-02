@@ -41,6 +41,7 @@ do{
 // Fills databases
 // Use button press to update
 generatePokemonDatabase(pokemon:&pokemonDatabase)
+generateMovesDatabase(moves:&movesDatabase)
 
 // Defines function to write test at a given point
 func writeAtLocation(_ string: String, location: Point){

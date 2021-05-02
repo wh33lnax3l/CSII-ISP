@@ -1,6 +1,6 @@
 import Foundation
 
-func generateMoveDatabase(moves:inout MovesDatabase){
+func generateMovesDatabase(moves:inout MovesDatabase){
 
     struct MoveEntry : Decodable{
         let data : DataDictionary?
