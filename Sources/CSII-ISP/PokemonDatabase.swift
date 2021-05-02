@@ -42,9 +42,11 @@ public class PokemonDatabase{
                                                   self.quickMoves <- quickMoves,
                                                   self.chargeMoves <- chargeMoves))
             print("Inserted in Pokemon at rowId: \(rowId)")
-        }catch let Result.error(message, code, statement) where code == SQLITE_CONSTRAINT{
+        }catch let Result.error(message, _, statement){
             // This is supposed to occur any time a duplicate name is attempted to be inserted
-            print("Constraint failed: \(message), in \(statement)")
+            // This is kinda a botch job. The signature *should* be catch let Result.error(message, code, statement) where code == SQLITE_CONSTRAINT, but it doesn't understand the error literal
+            precondition(statement != nil, "Statement in error \(message) was null")
+            print("Constraint failed: \(message), in \(statement!)")            
         }catch let error{
             print("Failed to insert: \(error)")
         }
