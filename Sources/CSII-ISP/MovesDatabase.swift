@@ -2,7 +2,7 @@ import SQLite
 import Foundation
 
 public class MovesDatabase{
-    private let db : Connection
+    private let db : Connection // Effectively just a connection to sqlite3 
     let moves = Table("moves")
 
     let name = Expression<String>("name")
@@ -15,7 +15,7 @@ public class MovesDatabase{
     let energyChange = Expression<Int>("energy_change")
 
     init() throws{
-        self.db = try Connection("~/CSII-ISP/Sources/CSII-ISP/pokemon.db")
+        self.db = try Connection("/home/ethan-forbes/CSII-ISP/Sources/CSII-ISP/pokemon.db")
         try db.run(moves.create(ifNotExists: true) { t in
                        t.column(name, primaryKey: true)
                        t.column(idNumber, unique: true)
@@ -39,9 +39,17 @@ public class MovesDatabase{
                                                 self.accuracy <- accuracy,
                                                 self.critical <- critical,
                                                 self.energyChange <- energyChange))
-            print("Inserted in Moves at rowId: \(rowId)")
-        }catch{
-            print("Failed to insert: \(error)")
+            textStack.appendText("Inserted in Moves at rowId: \(rowId)")
+        }catch let Result.error(message, _, statement){
+            // This is supposed to occur any time a duplicate name is attempted to be inserted
+            // This is kinda a botch job. The signature *should* be catch let Result.error(message, code, statement) where code == SQLITE_CONSTRAINT, but it doesn't understand the error literal
+            if statement != nil{
+                textStack.appendText("Constraint failed: \(message), in \(statement!)")
+            }else{
+                textStack.appendText("Constraint failed: \(message)")
+            }
+        }catch let error{
+            textStack.appendText("Failed to insert: \(error)")
         }
     }
 

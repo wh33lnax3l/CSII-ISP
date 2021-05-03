@@ -24,7 +24,10 @@ precondition(colors.areSupported, "This terminal doesn't support colors")
 colors.startUp()
 let keyboard = Keyboard.shared
 
-// Creates databases
+// Initialize Text Stack (Class responsible for dumping any feedback)
+var textStack = TextStack(window:mainWindow)
+
+// Initializes databases
 var pokemonDatabase : PokemonDatabase
 do{
     pokemonDatabase = try PokemonDatabase()    
@@ -42,6 +45,9 @@ do{
 // Use button press to update
 generatePokemonDatabase(pokemon:&pokemonDatabase)
 generateMovesDatabase(moves:&movesDatabase)
+mainWindow.clear()
+writeAtLocation("Finished populating databases!", location: Point(x:0, y:0))
+mainWindow.refresh()
 
 // Defines function to write test at a given point
 func writeAtLocation(_ string: String, location: Point){
@@ -60,6 +66,8 @@ let black = Color.standard(.black)
 let blackOnWhite = colors.newPair(foreground:black, background:white)
 
 // Adds label text
+/*
+mainWindow.clear()
 writeAtLocation("Enter the data of enemy pokemon",location: Point(x:0, y:0))
 writeAtLocation("Pokemon:            ",location: Point(x:0, y:1))
 writeAtLocation("CP:                 ",location: Point(x:0, y:2))
@@ -73,5 +81,6 @@ mainWindow.refresh()
 
 let tempStorage = receiveInput()
 writeAtLocation("I have a Pokemon!",location: Point(x:0, y:9))
+ */
 // Close cleanly
 screen.wait()

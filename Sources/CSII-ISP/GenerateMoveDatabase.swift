@@ -33,14 +33,21 @@ func generateMovesDatabase(moves:inout MovesDatabase){
         var energyChange : Int
         
         if let dataDict = entry.data{
-
+            
             if let templateId = dataDict.templateId{
-                guard let num = Int(templateId[templateId.index(templateId.startIndex, offsetBy: 1)...templateId.index(templateId.startIndex, offsetBy: 4)]) else{
-                    fatalError("ID Number from templateId \(templateId) did not conform to assumed format, and thus returned null when stripped and cast as an Int")
+                if !(templateId.count >= 5){
+                    textStack.appendText("templateId \(templateId) was not greater than 5 characters, where the dex number is in the assumed format")
+                    continue
                 }
-                idNumber = num
+                if let num = Int(templateId[templateId.index(templateId.startIndex, offsetBy: 1)...templateId.index(templateId.startIndex, offsetBy: 4)]){
+                    idNumber = num                    
+                }else{
+                    textStack.appendText("ID Number from templateId \(templateId) did not conform to assumed format, and thus returned null when stripped and cast as an Int")
+                    continue
+                }
+                
             }else{
-                print("Could not find templateId in data dictionary \(dataDict) in entry \(entry)")
+                textStack.appendText("Could not find templateId in data dictionary \(dataDict) in entry \(entry)")
                 continue
             }
 
@@ -49,22 +56,29 @@ func generateMovesDatabase(moves:inout MovesDatabase){
                 if let uniqueId = moveDict.uniqueId{
                     name = uniqueId
                 }else{
-                    print("Could not find uniqueId in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find uniqueId in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
                     continue
                 }
-
+                
                 if let typeData = moveDict.type{
-                    precondition(String(typeData[typeData.startIndex...typeData.index(typeData.startIndex, offsetBy:12)]) == "POKEMON_TYPE_", "Primary type \(typeData) does not follow assumed format")
-                    type = String(typeData[typeData.index(typeData.startIndex, offsetBy: 13)...typeData.endIndex])
+                    if !(typeData.count >= 14){
+                        textStack.appendText("Type string \(typeData) of length \(typeData.count) not of expected length of at least 14 characters")
+                        continue
+                    }
+                    if String(typeData[typeData.startIndex...typeData.index(typeData.startIndex, offsetBy:12)]) != "POKEMON_TYPE_"{
+                        textStack.appendText("Primary type \(typeData) does not follow assumed format")
+                        continue
+                    }                    
+                    type = String(typeData[typeData.index(typeData.startIndex, offsetBy: 13)..<typeData.endIndex])
                 }else{
-                    print("Could not find type in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find type in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
                     continue
                 }
                 
                 if let powerData = moveDict.power{
                     power = Int(powerData) // It is ASSUMED that power is always a whole number, as I have never seen to the contrary
                 }else{
-                    print("Could not find power in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find power in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
                     continue
                 }
 
@@ -83,17 +97,17 @@ func generateMovesDatabase(moves:inout MovesDatabase){
                 if let energyDelta = moveDict.energyDelta{
                     energyChange = energyDelta
                 }else{
-                    print("Could not find energy change in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find energy change in move dictionary \(moveDict) in data dictionary \(dataDict) in entry \(entry)")
                     continue
                 }
                 
             }else{
-                print("Could not find move dictionary in data dictionary \(dataDict) in entry \(entry)")
+                textStack.appendText("Could not find move dictionary in data dictionary \(dataDict) in entry \(entry)")
                 continue
             }
             
         }else{
-            print("Could not find data dictionary in entry \(entry)")
+            textStack.appendText("Could not find data dictionary in entry \(entry)")
             continue
         }
         

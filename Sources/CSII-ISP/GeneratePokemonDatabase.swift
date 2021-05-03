@@ -57,12 +57,19 @@ func generatePokemonDatabase(pokemon:inout PokemonDatabase){
         if let dataDict = entry.data{
             
             if let templateId = dataDict.templateId{
-                guard let num = Int(templateId[templateId.index(templateId.startIndex, offsetBy: 1)...templateId.index(templateId.startIndex, offsetBy: 4)]) else{
-                    fatalError("Dex Number from templateId \(templateId) did not conform to assumed format, and thus returned null when stripped and cast as an Int")
+                if !(templateId.count >= 5){
+                    textStack.appendText("templateId \(templateId) was not greater than 5 characters, where the dex number is in the assumed format")
+                    continue
+                }                
+                if let num = Int(templateId[templateId.index(templateId.startIndex, offsetBy: 1)...templateId.index(templateId.startIndex, offsetBy: 4)]){
+                    dexNumber = num                    
+                }else{
+                    textStack.appendText("Dex Number from templateId \(templateId) did not conform to assumed format, and thus returned null when stripped and cast as an Int")
+                    continue
                 }
-                dexNumber = num
+                
             }else{
-                print("Could not find templateId in data dictionary \(dataDict) in entry \(entry)")
+                textStack.appendText("Could not find templateId")
                 continue
             }
             
@@ -71,21 +78,35 @@ func generatePokemonDatabase(pokemon:inout PokemonDatabase){
                 if let uniqueId = pokemonDict.uniqueId{
                     name = uniqueId
                 }else{
-                    print("Could not find name in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find name")
                     continue
                 }
                 
                 if let type1 = pokemonDict.type1{
-                    precondition(String(type1[type1.startIndex...type1.index(type1.startIndex, offsetBy:12)]) == "POKEMON_TYPE_", "Primary type \(type1) does not follow assumed format")
-                    primaryType = String(type1[type1.index(type1.startIndex, offsetBy: 13)...type1.endIndex])
+                    if !(type1.count >= 14){
+                        textStack.appendText("Type string \(type1) of length \(type1.count) not of expected length of at least 14 characters")
+                        continue
+                    }
+                    if String(type1[type1.startIndex...type1.index(type1.startIndex, offsetBy:12)]) != "POKEMON_TYPE_"{
+                        textStack.appendText("Primary type \(type1) does not follow assumed format")
+                        continue
+                    }                    
+                    primaryType = String(type1[type1.index(type1.startIndex, offsetBy: 13)..<type1.endIndex])
                 }else{
-                    print("Could not find primary type in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find primary type")
                     continue
                 }
                 
                 if let type2 = pokemonDict.type2{
-                    precondition(String(type2[type2.startIndex...type2.index(type2.startIndex, offsetBy:12)]) == "POKEMON_TYPE_", "Primary type \(type2) does not follow assumed format")
-                    secondaryType = String(type2[type2.index(type2.startIndex, offsetBy: 13)...type2.endIndex])
+                    if !(type2.count >= 14){
+                        textStack.appendText("Type string \(type2) of length \(type2.count) not of expected length of at least 14 characters")
+                        continue
+                    }
+                    if String(type2[type2.startIndex...type2.index(type2.startIndex, offsetBy:12)]) != "POKEMON_TYPE_"{
+                        textStack.appendText("Primary type \(type2) does not follow assumed format")
+                        continue
+                    }                    
+                    secondaryType = String(type2[type2.index(type2.startIndex, offsetBy: 13)..<type2.endIndex])
                 }
                 
                 if let statsDict = pokemonDict.stats{
@@ -94,26 +115,26 @@ func generatePokemonDatabase(pokemon:inout PokemonDatabase){
                     if statsDict.baseStamina != nil{
                         baseStamina = statsDict.baseStamina!
                     }else{
-                        print("Could not find base stamina in stats dictionary \(statsDict) in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                        textStack.appendText("Could not find base stamina")
                         continue
                     }
 
                     if statsDict.baseAttack != nil{
                         baseAttack = statsDict.baseAttack!
                     }else{
-                        print("Could not find base attack in stats dictionary \(statsDict) in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                        textStack.appendText("Could not find base attack")
                         continue
                     }
 
                     if statsDict.baseDefense != nil{
                         baseDefense = statsDict.baseDefense!
                     }else{
-                        print("Could not find base defense in stats dictionary \(statsDict) in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                        textStack.appendText("Could not find base defense")
                         continue
                     }
                     
                 }else{
-                    print("Could not find stats dictionary in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find stats dictionary")
                     continue
                 }
                 
@@ -121,8 +142,9 @@ func generatePokemonDatabase(pokemon:inout PokemonDatabase){
                     for move in quickMoveArray{
                         quickMoves += "\(move),"            
                     }
+                    quickMoves.removeLast()
                 }else{
-                    print("Could not find quick moves in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find quick moves")
                     continue
                 }
                 
@@ -130,18 +152,19 @@ func generatePokemonDatabase(pokemon:inout PokemonDatabase){
                     for move in chargeMoveArray{
                         chargeMoves += "\(move),"
                     }
+                    chargeMoves.removeLast()
                 }else{
-                    print("Could not find charge moves in pokemon dictionary \(pokemonDict) in data dictionary \(dataDict) in entry \(entry)")
+                    textStack.appendText("Could not find charge moves")
                     continue
                 }
                 
             }else{
-                print("Could not find pokemon dictionary in data dictionary \(dataDict) in entry \(entry)")
+                textStack.appendText("Could not find pokemon dictionary")
                 continue
             }
             
         }else{
-            print("Could not find data dictionary in entry \(entry))")
+            textStack.appendText("Could not find data dictionary")
             continue
         }
         
