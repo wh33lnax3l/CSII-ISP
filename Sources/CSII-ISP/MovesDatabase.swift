@@ -39,70 +39,89 @@ public class MovesDatabase{
                                                 self.accuracy <- accuracy,
                                                 self.critical <- critical,
                                                 self.energyChange <- energyChange))
-            textStack.appendText("Inserted in Moves at rowId: \(rowId)")
+            globalTextStack.appendText("Inserted in Moves at rowId: \(rowId)")
         }catch let Result.error(message, _, statement){
             // This is supposed to occur any time a duplicate name is attempted to be inserted
             // This is kinda a botch job. The signature *should* be catch let Result.error(message, code, statement) where code == SQLITE_CONSTRAINT, but it doesn't understand the error literal
             if statement != nil{
-                textStack.appendText("Constraint failed: \(message), in \(statement!)")
+                globalTextStack.appendText("Constraint failed: \(message), in \(statement!)")
             }else{
-                textStack.appendText("Constraint failed: \(message)")
+                globalTextStack.appendText("Constraint failed: \(message)")
             }
         }catch let error{
-            textStack.appendText("Failed to insert: \(error)")
+            globalTextStack.appendText("Failed to insert: \(error)")
         }
     }
 
-    public func queryDataGivenName(dataColumn:MovesQueryType, name:String) -> String{ // Consider throwing from query?        
+    public func queryDataGivenName(dataColumn:MoveQueryType, name:String) -> String{
         do {
-            try db.run(moves.createIndex(name, unique: true, ifNotExists:true))
+            try db.run(moves.createIndex(self.name, unique: true, ifNotExists:true))
             switch dataColumn{
+                // When finding nothing, an empty string is returned, which is handled in initialization
+            case .name:
+                for move in try db.prepare(moves.select(self.name).filter(self.name == name)){
+                    return move[self.name]
+                }
+                return ""
             case .idNumber:
                 for move in try db.prepare(moves.select(self.name, idNumber).filter(self.name == name)){
                     return String(move[idNumber])
                 }
+                return ""
             case .type:
                 for move in try db.prepare(moves.select(self.name, type).filter(self.name == name)){
                     return move[type]
                 }
+                return ""
             case .power:
                 for move in try db.prepare(moves.select(self.name, power).filter(self.name == name)){
                     return String(move[power])
                 }
+                return ""
             case .duration:
                 for move in try db.prepare(moves.select(self.name, duration).filter(self.name == name)){
                     guard let result = move[duration] else{
-                        fatalError("Queried move \(name), resulting in row at \(move[self.name]) does not have a duration")
+                        return ""
                     }
                     return String(result)
                 }
+                return ""
             case .accuracy:
                 for move in try db.prepare(moves.select(self.name, accuracy).filter(self.name == name)){
                     guard let result = move[accuracy] else{
-                        fatalError("Queried move \(name), resulting in row at \(move[self.name]) does not have an accuracy")
+                        return ""
                     }
                     return String(result)
                 }
+                return ""
             case .critical:
                 for move in try db.prepare(moves.select(self.name, critical).filter(self.name == name)){
                     guard let result = move[critical] else{
-                        fatalError("Queried move \(name), resulting in row at \(move[self.name]) does not have a critical")
+                        return ""
                     }
                     return String(result)
                 }
+                return ""
             case .energyChange:
                 for move in try db.prepare(moves.select(self.name, energyChange).filter(self.name == name)){
                     return String(move[energyChange])
                 }
+                return ""
+            }
+        }catch let Result.error(message, _, statement){
+            if statement != nil{
+                fatalError("Query error \(message), \(statement!)")
+            }else{
+                fatalError("Query error \(message)")
             }
         }catch{
             fatalError("Did not successfully prepare db when attempting to query integer data with it.")
-        }
-        fatalError("Reached end of query without returning or failing. Ought to be impossible. Data column: \(dataColumn), Name: \(name)")
+        }        
     }
 }
 
-public enum MovesQueryType{    
+public enum MoveQueryType{
+    case name
     case idNumber
     case type
     case power

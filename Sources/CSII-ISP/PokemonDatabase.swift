@@ -41,68 +41,100 @@ public class PokemonDatabase{
                                                   self.baseDefense <- baseDefense,
                                                   self.quickMoves <- quickMoves,
                                                   self.chargeMoves <- chargeMoves))
-            textStack.appendText("Inserted in Pokemon at rowId: \(rowId)")
+            globalTextStack.appendText("Inserted in Pokemon at rowId: \(rowId)")
         }catch let Result.error(message, _, statement){
             // This is supposed to occur any time a duplicate name is attempted to be inserted
             // This is kinda a botch job. The signature *should* be catch let Result.error(message, code, statement) where code == SQLITE_CONSTRAINT, but it doesn't understand the error literal
             if statement != nil{
-                textStack.appendText("Constraint failed: \(message), in \(statement!)")
+                globalTextStack.appendText("Constraint failed: \(message), in \(statement!)")
             }else{
-                textStack.appendText("Constraint failed: \(message)")
+                globalTextStack.appendText("Constraint failed: \(message)")
             }
         }catch let error{
-            textStack.appendText("Failed to insert: \(error)")
+            globalTextStack.appendText("Failed to insert: \(error)")
         }
     }
 
-    public func queryDataGivenName(dataColumn:PokemonQueryType, name:String) -> String{ // Consider throwing from query?        
+    public func queryAllNames() -> [String]{
+        do{
+            var allNames = [String]()
+            for monster in try db.prepare(pokemon.select(self.name)){
+                allNames.append(monster[self.name])
+            }
+            return allNames
+        }catch{
+            fatalError("Could not prepare database when selecting all names")
+        }
+    }
+    
+    public func queryDataGivenName(dataColumn:PokemonQueryType, name:String) -> String{       
         do {
-            try db.run(pokemon.createIndex(name, unique: true, ifNotExists:true))
-            switch dataColumn{          
+            try db.run(pokemon.createIndex(self.name, unique: true, ifNotExists:true))
+            switch dataColumn{
+                // When finding nothing, an empty string is returned, which is handled in initialization
+            case .name:                
+                for monster in try db.prepare(pokemon.select(self.name).filter(self.name == name)){
+                    return monster[self.name]
+                }
+                return ""
             case .dexNumber:
                 for monster in try db.prepare(pokemon.select(self.name, dexNumber).filter(self.name == name)){
                     return String(monster[dexNumber])
                 }
-            case .primaryType:
+                return ""
+            case .primaryType:                
                 for monster in try db.prepare(pokemon.select(self.name, primaryType).filter(self.name == name)){
                     return monster[primaryType]
                 }
+                return ""
             case .secondaryType:
-                for monster in try db.prepare(pokemon.select(self.name, dexNumber).filter(self.name == name)){
+                for monster in try db.prepare(pokemon.select(self.name, secondaryType).filter(self.name == name)){
                     guard let result = monster[secondaryType] else{
-                        fatalError("Queried pokemon \(name), resulting in row at \(monster[self.name]) does not have secondry type.") // Make this throw an error or a functionally negligible type                        
+                        return ""
                     }
                     return result
                 }
+                return ""
             case .baseStamina:
                 for monster in try db.prepare(pokemon.select(self.name, baseStamina).filter(self.name == name)){
                     return String(monster[baseStamina])
                 }
+                return ""
             case .baseAttack:
                 for monster in try db.prepare(pokemon.select(self.name, baseAttack).filter(self.name == name)){
                     return String(monster[baseAttack])
                 }
+                return ""
             case .baseDefense:
                 for monster in try db.prepare(pokemon.select(self.name, baseDefense).filter(self.name == name)){
                     return String(monster[baseDefense])
                 }
+                return ""
             case .quickMoves:
                 for monster in try db.prepare(pokemon.select(self.name, quickMoves).filter(self.name == name)){
                     return String(monster[quickMoves])
                 }
+                return ""
             case .chargeMoves:
                 for monster in try db.prepare(pokemon.select(self.name, chargeMoves).filter(self.name == name)){
                     return String(monster[chargeMoves])
                 }
+                return ""
+            }
+        }catch let Result.error(message, _, statement){
+            if statement != nil{
+                fatalError("Query error \(message), \(statement!)")
+            }else{
+                fatalError("Query error \(message)")
             }
         }catch{
-            fatalError("Did not successfully prepare db when attempting to query integer data with it.")
+            fatalError("Other unknown query error")
         }
-        fatalError("Reached end of query without returning or failing. Ought to be impossible. Data column: \(dataColumn), Name: \(name)")
     }
 }
 
-public enum PokemonQueryType{    
+public enum PokemonQueryType{
+    case name
     case dexNumber
     case primaryType
     case secondaryType

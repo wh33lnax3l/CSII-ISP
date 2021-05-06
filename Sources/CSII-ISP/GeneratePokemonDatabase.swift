@@ -1,6 +1,6 @@
 import Foundation
 
-func generatePokemonDatabase(pokemon:inout PokemonDatabase){
+func generatePokemonDatabase(pokemon:inout PokemonDatabase, textStack:TextStack){
 
     // The JSON file is constructed of many layered JSONs, in order to decode these each new dict must be its own struct that conforms to Decodable and is explicitly keyed
     // ALL properties are optional, as parts of the JSON are families and not individual pokemon, and thus do not contain any needed properties. Easier to sort in code and will be better for long term use

@@ -9,7 +9,7 @@ class TextStack{
         self.window = window
         stackSize = window.size.height
     }
-
+    
     public func appendText(_ text:String){    
         stack.append(text)
         if stack.count > stackSize{

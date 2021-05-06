@@ -8,5 +8,7 @@ public enum InputError : Error{
     case healthPointsIVNotNum
     case healthPointsIVNotInRange
     case quickMoveNotReal
+    case quickMoveNotInMoveset
     case chargeMoveNotReal
+    case chargeMoveNotInMoveset
 }
